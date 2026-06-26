@@ -1,0 +1,26 @@
+spring:
+#  data:
+#    mongodb:
+#      uri: mongodb+srv://app_user:Kred_mint987@kredmint-dev.1gydsjt.mongodb.net/offer?retryWrites=true&w=majority
+  application:
+    name: loom-service
+  jackson:
+    default-property-inclusion: non_null
+  profiles:
+    active: ${PROFILE:local}
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 80MB
+      max-request-size: 80MB
+
+server:
+  port: 8080
+  servlet:
+    context-path: /loom
