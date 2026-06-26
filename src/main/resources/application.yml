@@ -21,6 +21,6 @@ spring:
       max-request-size: 80MB
 
 server:
-  port: 8080
+  port: 8085
   servlet:
     context-path: /loom

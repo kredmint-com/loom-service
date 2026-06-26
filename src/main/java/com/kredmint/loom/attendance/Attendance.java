@@ -1,6 +1,6 @@
 package com.kredmint.loom.attendance;
 
-import com.kredmint.loom.employee.Employee;
+import com.kredmint.loom.employee.entity.Employee;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalTime;

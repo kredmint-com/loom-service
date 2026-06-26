@@ -1,4 +1,4 @@
-package com.kredmint.loom.employee;
+package com.kredmint.loom.employee.entity;
 
 import com.kredmint.loom.user.User;
 import lombok.*;

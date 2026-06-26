@@ -1,4 +1,4 @@
-package com.kredmint.loom.employee;
+package com.kredmint.loom.employee.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
