@@ -1,14 +1,15 @@
 package com.kredmint.loom.employee;
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Department {
-    private Long id;
+
+    @Id
+    private String id;
     private String name;
     private String code;
-    private Employee manager;
 }
