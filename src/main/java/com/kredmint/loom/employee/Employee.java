@@ -14,7 +14,6 @@ public class Employee {
     private User user;
     private LocalDate dateOfJoining;
     private String designation;
-    private Double salary;
     private Department department;
     private Employee manager;
     
