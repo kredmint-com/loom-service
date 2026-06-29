@@ -1,22 +1,24 @@
 package com.kredmint.loom.employee.entity;
 
-import com.kredmint.loom.user.User;
 import lombok.*;
-import java.time.LocalDate;
+import org.springframework.data.annotation.Id;
 
-@Data
+import java.util.Date;
+
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Employee {
-    private Long id;
+
+    @Id
+    private String id;
+
+    private String username;
     private String employeeCode;
-    private User user;
-    private LocalDate dateOfJoining;
+    private Date dateOfJoining;
     private String designation;
-    private Department department;
-    private Employee manager;
-    
-    @Builder.Default
-    private String status = "ACTIVE";
+    private String department;
+    private String managerId;
+    private String status;
 }
