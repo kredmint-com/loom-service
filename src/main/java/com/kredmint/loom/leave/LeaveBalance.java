@@ -1,25 +1,68 @@
 package com.kredmint.loom.leave;
 
-import com.kredmint.loom.employee.entity.Employee;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+import java.math.BigDecimal;
+
+@Getter
+@Setter
+@Document("leave_balance")
 public class LeaveBalance {
-    private Long id;
-    private Employee employee;
-    private LeaveType leaveType;
-    private Double totalAllocated;
-    
-    @Builder.Default
-    private Double usedLeaves = 0.0;
-    
-    private Double remainingLeaves;
-    private Integer year;
 
-    public void updateRemaining() {
-        this.remainingLeaves = (this.totalAllocated != null ? this.totalAllocated : 0.0) - (this.usedLeaves != null ? this.usedLeaves : 0.0);
+    @Id
+    private String id;
+
+    private String employeeId;
+    private String employeeName;
+    private String department;
+    private String designation;
+
+    private LeaveType leaveType;
+
+    private Integer year;
+    private BigDecimal openingBalance;
+
+    // Leave credited during the year
+    private BigDecimal accruedLeave;
+
+    // Leave carried forward from previous year
+    private BigDecimal carriedForward;
+
+    // Leave already consumed
+    private BigDecimal usedLeave;
+
+    // Pending approval requests
+    private BigDecimal pendingLeave;
+
+    // Leave encashed
+    private BigDecimal encashedLeave;
+
+    // Current available balance
+    private BigDecimal availableBalance;
+
+    // Maximum leave allowed
+    private BigDecimal maximumAllowed;
+
+    // Whether carry forward is allowed
+    private Boolean carryForwardAllowed;
+
+    // Maximum carry forward limit
+    private BigDecimal carryForwardLimit;
+
+    // Remarks
+    private String remarks;
+
+    public enum LeaveType {
+        CASUAL,
+        SICK,
+        EARNED,
+        MATERNITY,
+        PATERNITY,
+        BEREAVEMENT,
+        COMPENSATORY,
+        UNPAID
     }
 }
