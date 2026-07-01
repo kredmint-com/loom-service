@@ -3,23 +3,22 @@ package com.kredmint.loom.employee.controller;
 import com.kredmint.loom.employee.entity.Department;
 import com.kredmint.loom.employee.repository.DepartmentRepository;
 import com.kredmint.loom.employee.service.DepartmentService;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@Slf4j
 @RequestMapping("/department")
 public class DepartmentController {
 
     @Autowired
     private DepartmentService departmentService;
 
-    @GetMapping("/get")
-    public String getAllDepartments(){
-        return departmentService.getAllDepartment();
+    @GetMapping
+    public List<Department> getAllDepartments(){
+        return departmentService.getAllDepartments();
     }
 
     @GetMapping("/{id}")
@@ -41,4 +40,5 @@ public class DepartmentController {
         public void deleteDepartment(@PathVariable String id){
         departmentService.deleteDepartment(id);
     }
+
 }
