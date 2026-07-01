@@ -38,7 +38,7 @@ public class Asset {
     private String description;
     private String remarks;
 
-    private boolean deleted;
+//    private boolean deleted;
 
     public enum AssetType {
         LAPTOP,

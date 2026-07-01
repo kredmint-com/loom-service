@@ -43,7 +43,7 @@ public class LeaveRequest {
     private String approverRemarks;
     private String escalatedTo;
 
-    private boolean deleted;
+//    private boolean deleted;
 
     public enum LeaveType {
         CASUAL,
