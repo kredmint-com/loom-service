@@ -24,9 +24,9 @@ public class EmployeeController {
         return employeeService.getAllEmployees();
     }
 
-    @GetMapping({"/{id}"})
+    @GetMapping("/{id}")
     public Employee getEmployeeById(@PathVariable String id){
-        return employeeService.getEmployeeById(id);
+        return employeeService.getById(id);
     }
 
     @PutMapping("/{id}")
@@ -41,7 +41,6 @@ public class EmployeeController {
 
     @GetMapping("/{managerId}/juniors")
     public List<Employee> getAllJuniors(@PathVariable String managerId){
-
         return employeeService.getAllJuniors(managerId);
 
     }

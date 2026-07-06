@@ -14,10 +14,10 @@ import java.util.Date;
 public class Employee {
 
     @Id
-    private String id;
+    private String id; // used in leave module
 
     private String username;
-    private String employeeCode;
+    private String referenceId;
     private String email;
     private String phoneNumber;
     private Date dateOfJoining;
