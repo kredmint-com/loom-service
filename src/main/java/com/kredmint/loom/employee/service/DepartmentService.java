@@ -16,8 +16,6 @@ public class DepartmentService {
     @Autowired
     private DepartmentRepository departmentRepository;
 
-    private List<Department> departments = new ArrayList<>();
-
     public Department createDepartment(Department department) {
         return departmentRepository.save(department);
     }

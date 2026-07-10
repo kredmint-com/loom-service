@@ -1,4 +1,4 @@
-package com.kredmint.loom.leave;
+package com.kredmint.loom.leave.entity;
 
 import lombok.Getter;
 import lombok.Setter;
