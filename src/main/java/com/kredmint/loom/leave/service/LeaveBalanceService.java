@@ -4,7 +4,6 @@ import com.kredmint.loom.leave.entity.LeaveBalance;
 import com.kredmint.loom.leave.repository.LeaveBalanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -18,11 +17,19 @@ public class LeaveBalanceService {
         if (!validateLeaveBalance(leaveBalance)) {
             throw new RuntimeException("Invalid leave balance data.");
         }
-        if (isDuplicateLeaveBalance(leaveBalance)) {
+       validateBalance(leaveBalance.getOpeningBalance(),"Opening Balance");
+        validateBalance(leaveBalance.getAccruedLeave(),"Accured Leave");
+        validateBalance(leaveBalance.getCarriedForward(),"Carried Forward");
+        validateBalance(leaveBalance.getUsedLeave(),"Used Leave");
+        validateBalance(leaveBalance.getPendingLeave(),"Pending Leave");
+        validateBalance(leaveBalance.getEncashedLeave(),"Encashed Leave");
+        validateBalance(leaveBalance.getMaximumAllowed(),"Maximum Allowed");
+        validateBalance(leaveBalance.getCarryForwardLimit(),"Carry Forward Limit");
+
+        if (isDuplicateLeaveBalance(leaveBalance)){
             throw new RuntimeException("Leave balance already exists for this employee.");
         }
-        leaveBalance.setAvailableBalance(
-                calculateAvailableBalance(leaveBalance));
+        leaveBalance.setAvailableBalance(calculateAvailableBalance(leaveBalance));
         return leaveBalanceRepository.save(leaveBalance);
     }
 
@@ -39,27 +46,36 @@ public class LeaveBalanceService {
         }
         return leaveBalances;
     }
-    public LeaveBalance updateLeaveBalance(LeaveBalance leaveBalance) {
-
-        if (!leaveBalanceRepository.existsById(leaveBalance.getId())) {
+    public LeaveBalance updateLeaveBalance(String id, LeaveBalance leaveBalance) {
+        if (!leaveBalanceRepository.existsById(id)) {
             throw new RuntimeException("Leave balance not found.");
         }
+        leaveBalance.setId(id);
 
         if (!validateLeaveBalance(leaveBalance)) {
             throw new RuntimeException("Invalid leave balance data.");
         }
+        validateBalance(leaveBalance.getOpeningBalance(), "Opening Balance");
+        validateBalance(leaveBalance.getAccruedLeave(), "Accrued Leave");
+        validateBalance(leaveBalance.getCarriedForward(), "Carried Forward");
+        validateBalance(leaveBalance.getUsedLeave(), "Used Leave");
+        validateBalance(leaveBalance.getPendingLeave(), "Pending Leave");
+        validateBalance(leaveBalance.getEncashedLeave(), "Encashed Leave");
+        validateBalance(leaveBalance.getMaximumAllowed(), "Maximum Allowed");
+        validateBalance(leaveBalance.getCarryForwardLimit(), "Carry Forward Limit");
 
-        calculateAvailableBalance(leaveBalance);
-
+        leaveBalance.setAvailableBalance(calculateAvailableBalance(leaveBalance));
         return leaveBalanceRepository.save(leaveBalance);
     }
 
     private boolean validateLeaveBalance(LeaveBalance leaveBalance) {
-            return hasRequiredFields(leaveBalance)
-                    && isNonNegative(leaveBalance.getOpeningBalance())
-                    && isNonNegative(leaveBalance.getMaximumAllowed())
-                    && (leaveBalance.getCarryForwardLimit() == null
-                    || isNonNegative(leaveBalance.getCarryForwardLimit()));
+        return hasRequiredFields(leaveBalance);
+    }
+
+    private void validateBalance(double value, String fieldName){
+        if (value<0){
+            throw new RuntimeException(fieldName+ " cannot be negative.");
+        }
     }
 
         private boolean hasRequiredFields(LeaveBalance leaveBalance) {
@@ -69,42 +85,32 @@ public class LeaveBalanceService {
                     && leaveBalance.getDesignation() != null
                     && leaveBalance.getLeaveType() != null
                     && leaveBalance.getYear() != null
-                    && leaveBalance.getOpeningBalance() != null
-                    && leaveBalance.getMaximumAllowed() != null
                     && leaveBalance.getCarryForwardAllowed() != null;
         }
 
-        private boolean isNonNegative(BigDecimal value) {
-            return value.compareTo(BigDecimal.ZERO) >= 0;
+        public LeaveBalance getLeaveBalanceByEmployeeIdAndLeaveTypeAndYear(
+                String employeeId,
+                LeaveBalance.LeaveType leaveType,
+                Integer year){
+            return leaveBalanceRepository.findByEmployeeIdAndLeaveTypeAndYear(employeeId, leaveType, year).orElse(null);
         }
 
+
     private boolean isDuplicateLeaveBalance(LeaveBalance leaveBalance) {
-        return leaveBalanceRepository
-                .findByEmployeeIdAndLeaveTypeAndYear(
+        return getLeaveBalanceByEmployeeIdAndLeaveTypeAndYear(
                         leaveBalance.getEmployeeId(),
                         leaveBalance.getLeaveType(),
                         leaveBalance.getYear()
-                )
-                .isPresent();
+        )!=null;
     }
 
-    private  BigDecimal  calculateAvailableBalance(LeaveBalance leaveBalance) {
-        BigDecimal availableBalance = getValue(leaveBalance.getOpeningBalance())
-                .add(getValue(leaveBalance.getAccruedLeave()))
-                .add(getValue(leaveBalance.getCarriedForward()))
-                .subtract(getValue(leaveBalance.getUsedLeave()))
-                .subtract(getValue(leaveBalance.getPendingLeave()))
-                .subtract(getValue(leaveBalance.getEncashedLeave()));
-        leaveBalance.setAvailableBalance(availableBalance);
-
-        return availableBalance;
-    }
-
-    private BigDecimal getValue(BigDecimal value) {
-        if (value == null) {
-            return BigDecimal.ZERO;
-        }
-        return value;
+    private  double calculateAvailableBalance(LeaveBalance leaveBalance) {
+        return leaveBalance.getOpeningBalance()
+                +leaveBalance.getAccruedLeave()
+                +leaveBalance.getCarriedForward()
+                -leaveBalance.getUsedLeave()
+                -leaveBalance.getPendingLeave()
+                -leaveBalance.getEncashedLeave();
     }
 
     public void deleteLeaveBalance(String id) {
@@ -112,7 +118,6 @@ public class LeaveBalanceService {
         if (!leaveBalanceRepository.existsById(id)) {
             throw new RuntimeException("Leave balance not found.");
         }
-
         leaveBalanceRepository.deleteById(id);
     }
     }

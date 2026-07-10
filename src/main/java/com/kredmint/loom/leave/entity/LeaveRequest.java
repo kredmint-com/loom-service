@@ -31,7 +31,7 @@ public class LeaveRequest {
     private LocalDate endDate;
     private boolean halfDay;
     private HalfDaySession halfDaySession;
-    private BigDecimal totalDays;
+    private double totalDays;
 
     private String reason;
 

@@ -7,6 +7,8 @@ import com.kredmint.loom.leave.service.LeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +24,7 @@ public class LeaveController {
     private LeaveBalanceService leaveBalanceService;
 
     //LeaveRequest
-    @PostMapping("/raise")
+    @PostMapping
     public LeaveRequest raiseRequest(@RequestBody LeaveRequest request) {
         return leaveService.raiseRequest(request);
     }
@@ -35,23 +37,20 @@ public class LeaveController {
     @GetMapping("/employee/{employeeId}")
     public Page<LeaveRequest> getEmployeeRequests(
             @PathVariable String employeeId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @PageableDefault Pageable pageable)
+             {
 
         return leaveService.getEmployeeRequests(
-                employeeId,
-                PageRequest.of(page, size));
+                employeeId, pageable);
     }
 
     @GetMapping("/pending/{managerId}")
     public Page<LeaveRequest> getPendingApprovals(
             @PathVariable String managerId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @PageableDefault Pageable pageable) {
 
         return leaveService.getPendingApprovals(
-                managerId,
-                PageRequest.of(page, size));
+                managerId, pageable);
     }
 
     @PutMapping("/status/{requestId}")
@@ -72,7 +71,6 @@ public class LeaveController {
     public LeaveRequest updateRequest(
             @PathVariable String requestId,
             @RequestBody LeaveRequest request) {
-
         return leaveService.updateRequest(requestId, request);
     }
 
@@ -92,8 +90,8 @@ public class LeaveController {
         return leaveBalanceService.getEmployeeLeaveBalances(employeeId);
     }
     @PutMapping("/balance/{id}") //LB001
-    public LeaveBalance updateLeaveBalance(@RequestBody LeaveBalance leaveBalance) {
-        return leaveBalanceService.updateLeaveBalance(leaveBalance);
+    public LeaveBalance updateLeaveBalance(@PathVariable String id, @RequestBody LeaveBalance leaveBalance) {
+        return leaveBalanceService.updateLeaveBalance(id, leaveBalance);
     }
     @DeleteMapping("/balance/{id}") //LB001
     public void deleteLeaveBalance(@PathVariable String id) {
