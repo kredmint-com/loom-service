@@ -18,18 +18,12 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     private void dfs(String managerId, List<Employee> result) {
-
         List<Employee> employees = employeeRepository.findByManagerId(managerId);
-
         for (Employee employee : employees) {
-
             result.add(employee);
-
             dfs(employee.getId(), result);
         }
     }
-
-    //private List<Employee> employees = new ArrayList<>();
 
     public Employee createEmployee(Employee employee) {
         return employeeRepository.save(employee);
@@ -69,5 +63,9 @@ public class EmployeeService {
         }
 
         return result;
+    }
+
+    public Employee getEmployeeByCode(String employeeCode) {
+        return employeeRepository.findByEmployeeCode(employeeCode);
     }
 }

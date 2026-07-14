@@ -1,4 +1,4 @@
-package com.kredmint.loom.attendance;
+package com.kredmint.loom.attendance.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -23,7 +23,7 @@ public class Attendance {
     private LocalDate date;
 
     public enum Status {
-        ABSENT, PRESENT, HALF_DAY, WORK_FROM_HOME
+        ABSENT, PRESENT, HALF_DAY, WORK_FROM_HOME, WEEKEND
     }
 
     public enum Type {
