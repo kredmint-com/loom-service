@@ -111,7 +111,7 @@ public class AttendanceService {
             currentDate = startDate;
 
             while (!currentDate.isAfter(endDate)) {
-                //chnage
+
                 Attendance attendance = attendanceRepository
                         .findByEmployeeIdAndDate(employee.getId(), currentDate);
 
@@ -120,15 +120,6 @@ public class AttendanceService {
                 System.out.println("Date     : " + currentDate);
                 System.out.println("Result   : " + attendance);
 
-//                if (attendance != null) {
-//                    writer.print("," + attendance.getStatus());
-//                    if (attendance.getStatus() == Attendance.Status.ABSENT) {
-//                        leaveCount++;
-//                    }
-//                } else {
-//                    writer.print(",ABSENT");
-//                    leaveCount++;
-//                }
 
                 if (attendance != null) {
 
