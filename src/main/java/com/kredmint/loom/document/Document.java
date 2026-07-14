@@ -9,11 +9,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Document {
-    private Long id;
-    private String name;
+    private String id;
+    private String documentName;
     private String fileUrl;
     private DocumentType documentType;
-    
     @Builder.Default
     private String status = "PENDING";
     
