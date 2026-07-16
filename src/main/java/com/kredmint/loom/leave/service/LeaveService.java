@@ -8,12 +8,16 @@ import com.kredmint.loom.leave.repository.LeaveBalanceRepository;
 import com.kredmint.loom.leave.repository.LeaveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 public class LeaveService {
@@ -26,6 +30,8 @@ public class LeaveService {
 
     @Autowired
     private LeaveRepository leaveRepository;
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     public LeaveRequest raiseRequest(LeaveRequest request) {
         if (!validateLeaveRequest(request)) {
@@ -43,7 +49,16 @@ public class LeaveService {
     }
 
     public Page<LeaveRequest> getEmployeeRequests(String employeeId, Pageable pageable) {
-        return leaveRepository.findByEmployeeId(employeeId, pageable);
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("employeeId").is(employeeId));
+
+        long total = mongoTemplate.count(query, LeaveRequest.class);
+        query.with(pageable);
+
+        List<LeaveRequest> leaveRequests= mongoTemplate.find(query, LeaveRequest.class);
+
+        return new PageImpl<>(leaveRequests, pageable, total);
     }
 
     public Page<LeaveRequest> getPendingApprovals(String managerId, Pageable pageable) {
@@ -58,7 +73,7 @@ public class LeaveService {
         LeaveRequest request = getRequestById(requestId);
 
         if (request == null) {
-            return null;
+            throw new RuntimeException("Leave request not found.");
         }
         request.setStatus(status);
         request.setApprovedBy(actedBy);
@@ -70,13 +85,11 @@ public class LeaveService {
 
     public LeaveRequest updateRequest(String requestId, LeaveRequest request) {
         LeaveRequest existingRequest = getRequestById(requestId);
-
         if (existingRequest == null) {
-            return null;
+            throw new RuntimeException("Leave request not found");
         }
-
         if (existingRequest.getStatus() != LeaveRequest.LeaveStatus.PENDING) {
-            return null;
+            throw new RuntimeException("Only pending leave request can be updated");
         }
         existingRequest.setLeaveType(request.getLeaveType());
         existingRequest.setStartDate(request.getStartDate());
@@ -85,7 +98,6 @@ public class LeaveService {
         existingRequest.setHalfDaySession(request.getHalfDaySession());
         existingRequest.setReason(request.getReason());
         existingRequest.setTotalDays(calculateLeaveDays(request));
-
         if (!validateLeaveRequest(existingRequest)) {
             return null;
         }
@@ -108,15 +120,16 @@ public class LeaveService {
     }
 
 
-    public BigDecimal calculateLeaveDays(LeaveRequest request) {
+    public double calculateLeaveDays(LeaveRequest request) {
+
         long totalDays = ChronoUnit.DAYS.between(
                 request.getStartDate(),
                 request.getEndDate()) + 1;
+
         if (request.isHalfDay()) {
-            return BigDecimal.valueOf(totalDays)
-                    .subtract(BigDecimal.valueOf(0.5));
+            return totalDays - 0.5;
         }
-        return BigDecimal.valueOf(totalDays);
+        return totalDays;
     }
 
     public boolean hasSufficientLeaveBalance(String employeeId, LeaveRequest request) {
@@ -131,8 +144,8 @@ public class LeaveService {
         if (leaveBalance == null) {
             return false;
         }
-        BigDecimal leaveDays = calculateLeaveDays(request);
-        return leaveDays.compareTo(leaveBalance.getAvailableBalance()) <= 0;
+        double leaveDays = calculateLeaveDays(request);
+        return leaveDays <= leaveBalance.getAvailableBalance();
     }
 
         public void assignManager (LeaveRequest request){
