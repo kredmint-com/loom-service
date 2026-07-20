@@ -1,23 +1,39 @@
 package com.kredmint.loom.approval;
 
-import com.kredmint.loom.employee.entity.Employee;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter
+@Setter
+@Document("approval_request")
 public class ApprovalRequest {
-    private Long id;
-    private String entityType; // e.g. "LeaveRequest", "AssetAssignment"
-    private Long entityId;     // Reference to the target entity's ID
-    private Employee requester;
-    private Employee currentApprover;
-    
-    @Builder.Default
-    private ApprovalStatus status = ApprovalStatus.PENDING;
-    
+
+    @Id
+    private String id;
+
+    private String entityId;      // LeaveRequest.id
+    private ApprovalEntityType entityType; // LEAVE
+
+    private ApprovalStatus status;
+
+    private int level;
+
+    private String empId;
+    private String approverId;
+    private String approverName;
+
+    private LocalDateTime assignedAt;
+    private LocalDateTime actionAt;
+
+    private String remarks;
+
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime completedAt;
+
+    public enum ApprovalEntityType {
+        LEAVE, WORK_FROM_HOME
+    }
 }
