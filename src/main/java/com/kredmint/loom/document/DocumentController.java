@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("documents")
+@RequestMapping("/documents")
 public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
 
-    @PostMapping("/create")
+    @PostMapping
    public Document createDocument(@RequestBody Document document){
         return documentService.createDocument(document);
     }
@@ -42,18 +42,11 @@ public class DocumentController {
         return documentService.getEmployeeDocuments(id);
     }
 
-    @GetMapping("/status/{status}")
-    public List<Document> getDocumentsByStatus(@PathVariable Document.Status status) {
-        return documentService.getDocumentsByStatus(status);
+    @GetMapping("/filter")
+    public List<Document> getDocuments(
+            @RequestParam(required = false) Document.Status status,
+            @RequestParam(required = false) Document.DocumentType documentType){
+        return documentService.getDocuments(status,documentType);
+
+           }
     }
-
-    @GetMapping("/type/{documentType}")
-    public List<Document> getDocumentsByDocumentType(
-            @PathVariable Document.DocumentType documentType) {
-        return documentService.getDocumentsByDocumentType(documentType);
-    }
-
-
-
-
-}

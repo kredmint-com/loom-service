@@ -1,6 +1,9 @@
 package com.kredmint.loom.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -8,6 +11,9 @@ import java.util.List;
 
 @Service
 public class DocumentService {
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Autowired
     private DocumentRepository documentRepository;
@@ -33,31 +39,26 @@ public class DocumentService {
         return documentRepository.findByEmplyoeeId(id);
     }
 
-    public List<Document> getDocumentsByStatus(Document.Status status){
-        return documentRepository.findByStatus(status);
-    }
-
-    public List<Document> getDocumentsByDocumentType(Document.DocumentType documentType) {
-        return documentRepository.findByDocumentType(documentType);
-    }
-
     public Document updateDocument(String id, Document updatedDocument) {
 
         Document existingDocument = documentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
-        existingDocument.setCreatedBy(updatedDocument.getCreatedBy());
-        existingDocument.setUrl(updatedDocument.getUrl());
-        existingDocument.setEmplyoeeId(updatedDocument.getEmplyoeeId());
-        existingDocument.setName(updatedDocument.getName());
-        existingDocument.setDocumentType(updatedDocument.getDocumentType());
-        existingDocument.setUrlExpiryDate(updatedDocument.getUrlExpiryDate());
-        existingDocument.setLenderId(updatedDocument.getLenderId());
-        existingDocument.setComment(updatedDocument.getComment());
-        existingDocument.setStatus(updatedDocument.getStatus());
-        existingDocument.setDocPassword(updatedDocument.getDocPassword());
+        Document document = new Document(
+                existingDocument.getId(),
+                updatedDocument.getCreatedBy(),
+                updatedDocument.getUrl(),
+                updatedDocument.getEmplyoeeId(),
+                updatedDocument.getName(),
+                updatedDocument.getDocumentType(),
+                updatedDocument.getUrlExpiryDate(),
+                updatedDocument.getLenderId(),
+                updatedDocument.getComment(),
+                updatedDocument.getStatus(),
+                updatedDocument.getDocPassword(),
+                existingDocument.getUploadedAt());
+        return documentRepository.save(document);
 
-        return documentRepository.save(existingDocument);
     }
 
     public void deleteDocument(String id) {
@@ -67,6 +68,20 @@ public class DocumentService {
         }
 
         documentRepository.deleteById(id);
+    }
+
+    public List<Document> getDocuments(Document.Status status,
+                                       Document.DocumentType documentType){
+        Query query = new Query();
+
+        if(status !=null){
+            query.addCriteria(Criteria.where("status").is(status));
+        }
+
+        if(documentType!=null){
+            query.addCriteria(Criteria.where("documentType").is(documentType));
+        }
+        return mongoTemplate.find(query, Document.class);
     }
 }
 

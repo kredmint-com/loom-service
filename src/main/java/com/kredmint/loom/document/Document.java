@@ -24,7 +24,7 @@ public class Document {
 
     private String name;
 
-    private String documentType;
+    private DocumentType documentType;
 
     private Date urlExpiryDate;
 
