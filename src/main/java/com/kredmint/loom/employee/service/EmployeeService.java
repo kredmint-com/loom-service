@@ -67,5 +67,6 @@ public class EmployeeService {
 
     public Employee getEmployeeByCode(String employeeCode) {
         return employeeRepository.findByEmployeeCode(employeeCode);
+
     }
 }
