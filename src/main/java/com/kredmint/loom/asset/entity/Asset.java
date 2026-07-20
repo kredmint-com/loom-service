@@ -1,4 +1,4 @@
-package com.kredmint.loom.asset;
+package com.kredmint.loom.asset.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -38,7 +38,7 @@ public class Asset {
     private String description;
     private String remarks;
 
-//    private boolean deleted;
+    private boolean deleted;
 
     public enum AssetType {
         LAPTOP,

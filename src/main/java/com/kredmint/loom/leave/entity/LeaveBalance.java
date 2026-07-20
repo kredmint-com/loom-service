@@ -1,4 +1,4 @@
-package com.kredmint.loom.leave;
+package com.kredmint.loom.leave.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,34 +23,34 @@ public class LeaveBalance {
     private LeaveType leaveType;
 
     private Integer year;
-    private BigDecimal openingBalance;
+    private double openingBalance;
 
     // Leave credited during the year
-    private BigDecimal accruedLeave;
+    private double accruedLeave;
 
     // Leave carried forward from previous year
-    private BigDecimal carriedForward;
+    private double carriedForward;
 
     // Leave already consumed
-    private BigDecimal usedLeave;
+    private double usedLeave;
 
     // Pending approval requests
-    private BigDecimal pendingLeave;
+    private double pendingLeave;
 
     // Leave encashed
-    private BigDecimal encashedLeave;
+    private double encashedLeave;
 
     // Current available balance
-    private BigDecimal availableBalance;
+    private double availableBalance;
 
     // Maximum leave allowed
-    private BigDecimal maximumAllowed;
+    private double maximumAllowed;
 
     // Whether carry forward is allowed
     private Boolean carryForwardAllowed;
 
     // Maximum carry forward limit
-    private BigDecimal carryForwardLimit;
+    private double carryForwardLimit;
 
     // Remarks
     private String remarks;
