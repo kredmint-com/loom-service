@@ -1,15 +1,62 @@
 package com.kredmint.loom.attendance;
 
+import com.kredmint.loom.attendance.entity.Attendance;
+import com.kredmint.loom.attendance.repository.AttendanceRepository;
+import com.kredmint.loom.attendance.repository.HolidayRepository;
+import com.kredmint.loom.employee.entity.Employee;
+import com.kredmint.loom.employee.repository.EmployeeRepository;
+import com.kredmint.loom.employee.service.EmployeeService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-@Service
-public class AttendanceScheduler {
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-    @Scheduled(cron = "* * * * * *")
+@Service
+@EnableScheduling
+@RequiredArgsConstructor
+public class AttendanceScheduler {
+    private AttendanceRepository attendanceRepository;
+    private EmployeeService employeeService;
+    private HolidayRepository holidayRepository;
+
+
+   @Scheduled(cron = "0 0 0 * * *")
     public void syncAttendance() {
-        // todo : add new attendance entry each day.
-        // todo : check if holiday or leave or wfh or weekend
-        // todo : update attendance status
+
+        LocalDate today = LocalDate.now();
+        Attendance.Type type;
+
+        if(holidayRepository.existsByDate(today)){
+            type = Attendance.Type.HOLIDAY;
+        }
+
+        else if (today.getDayOfWeek()== DayOfWeek.SATURDAY || today.getDayOfWeek() == DayOfWeek.SUNDAY){
+            type = Attendance.Type.WEEKEND;
+        }
+
+        else{
+            type = Attendance.Type.WORKING;
+        }
+
+        List<Employee> employees = employeeService.getAllEmployees();
+
+        List<Attendance> attendanceList = new ArrayList<>();
+
+        for (Employee employee : employees) {
+
+            Attendance attendance = Attendance.builder()
+                    .employeeId(employee.getId())
+                    .date(LocalDate.now())
+                    .status(Attendance.Status.ABSENT)
+                    .type(Attendance.Type.WORKING)
+                    .build();
+
+            attendanceRepository.saveAll(attendanceList);
+        }
     }
 }
