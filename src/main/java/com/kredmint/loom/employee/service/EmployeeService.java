@@ -17,7 +17,13 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    //private List<Employee> employees = new ArrayList<>();
+    private void dfs(String managerId, List<Employee> result) {
+        List<Employee> employees = employeeRepository.findByManagerId(managerId);
+        for (Employee employee : employees) {
+            result.add(employee);
+            dfs(employee.getId(), result);
+        }
+    }
 
     public Employee createEmployee(Employee employee) {
         return employeeRepository.save(employee);
@@ -27,7 +33,7 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
-    public Employee getById(String id) {
+    public Employee getEmployeeById(String id) {
         return employeeRepository.findById(id).orElse(null);
     }
 
@@ -48,11 +54,19 @@ public class EmployeeService {
     }
 
     private List<Employee> dfs(String managerId) {
+
         List<Employee> result = new ArrayList<>();
+
         for (Employee employee : employeeRepository.findByManagerId(managerId)) {
             result.add(employee);
             result.addAll(dfs(employee.getId()));
         }
+
         return result;
+    }
+
+    public Employee getEmployeeByCode(String employeeCode) {
+        return employeeRepository.findByEmployeeCode(employeeCode);
+
     }
 }

@@ -1,11 +1,10 @@
-package com.kredmint.loom.leave.entity;
+package com.kredmint.loom.leave;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,12 +25,12 @@ public class LeaveRequest {
     private String managerId;
     private String managerName;
 
-    private LeaveBalance.LeaveType leaveType;
+    private LeaveType leaveType;
     private LocalDate startDate;
     private LocalDate endDate;
     private boolean halfDay;
     private HalfDaySession halfDaySession;
-    private double totalDays;
+    private int totalDays;
 
     private String reason;
 
@@ -45,6 +44,18 @@ public class LeaveRequest {
     private String escalatedTo;
 
 //    private boolean deleted;
+
+    public enum LeaveType {
+        CASUAL,
+        SICK,
+        EARNED,
+        MATERNITY,
+        PATERNITY,
+        BEREAVEMENT,
+        COMPENSATORY,
+        UNPAID,
+        WORK_FROM_HOME
+    }
 
     public enum LeaveStatus {
         DRAFT,
