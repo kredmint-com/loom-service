@@ -1,5 +1,7 @@
 package com.kredmint.loom.leave.service;
 
+import com.kredmint.loom.approval.ApprovalRequest;
+import com.kredmint.loom.approval.ApprovalService;
 import com.kredmint.loom.employee.entity.Employee;
 import com.kredmint.loom.employee.service.EmployeeService;
 import com.kredmint.loom.leave.entity.LeaveBalance;
@@ -30,8 +32,12 @@ public class LeaveService {
 
     @Autowired
     private LeaveRepository leaveRepository;
+
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private ApprovalService approvalService;
 
     public LeaveRequest raiseRequest(LeaveRequest request) {
         if (!validateLeaveRequest(request)) {
@@ -41,7 +47,21 @@ public class LeaveService {
         assignManager(request);
         request.setStatus(LeaveRequest.LeaveStatus.PENDING);
         request.setRequestedOn(LocalDateTime.now());
-        return leaveRepository.save(request);
+
+        LeaveRequest savedRequest = leaveRepository.save(request);
+
+        //creatingApproval
+        ApprovalRequest approvalRequest = new ApprovalRequest();
+
+        approvalRequest.setEntityId(savedRequest.getId());
+        approvalRequest.setEntityType(ApprovalRequest.ApprovalEntityType.LEAVE);
+        approvalRequest.setEmpId(savedRequest.getEmployeeId());
+        approvalRequest.setApproverId(savedRequest.getManagerId());
+        approvalRequest.setApproverName(savedRequest.getManagerName());
+
+        approvalService.create(approvalRequest);
+        return savedRequest;
+
     }
 
     public LeaveRequest getRequestById(String requestId) {

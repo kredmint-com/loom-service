@@ -19,7 +19,6 @@ public class ApprovalRequest {
 
     private ApprovalStatus status;
 
-    private int level;
 
     private String empId;
     private String approverId;
