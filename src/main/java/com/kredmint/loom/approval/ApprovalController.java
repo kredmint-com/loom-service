@@ -46,7 +46,7 @@ public class ApprovalController {
 
     @GetMapping("/pending")
     public Page<ApprovalRequest> getPendingApprovals(@RequestParam String approverId,
-                                                    @PageableDefault(size = 10, page = 0) Pageable pageable) {
+                                                    @PageableDefault Pageable pageable) {
         return approvalService.getPendingApprovals(approverId, pageable);
     }
 

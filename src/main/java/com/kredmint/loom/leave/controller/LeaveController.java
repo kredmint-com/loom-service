@@ -6,7 +6,6 @@ import com.kredmint.loom.leave.service.LeaveBalanceService;
 import com.kredmint.loom.leave.service.LeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
@@ -80,7 +79,7 @@ public class LeaveController {
         return leaveBalanceService.createLeaveBalance(leaveBalance);
     }
 
-    @GetMapping("/balance/{id}") //LB001
+    @GetMapping("/balance/{id}")
     public LeaveBalance getLeaveBalanceById(@PathVariable String id) {
         return leaveBalanceService.getLeaveBalanceById(id);
     }
@@ -89,11 +88,11 @@ public class LeaveController {
     public List<LeaveBalance> getEmployeeLeaveBalances(@PathVariable String employeeId) {
         return leaveBalanceService.getEmployeeLeaveBalances(employeeId);
     }
-    @PutMapping("/balance/{id}") //LB001
+    @PutMapping("/balance/{id}")
     public LeaveBalance updateLeaveBalance(@PathVariable String id, @RequestBody LeaveBalance leaveBalance) {
         return leaveBalanceService.updateLeaveBalance(id, leaveBalance);
     }
-    @DeleteMapping("/balance/{id}") //LB001
+    @DeleteMapping("/balance/{id}")
     public void deleteLeaveBalance(@PathVariable String id) {
         leaveBalanceService.deleteLeaveBalance(id);
     }

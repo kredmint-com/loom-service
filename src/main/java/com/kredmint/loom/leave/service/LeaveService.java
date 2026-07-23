@@ -76,7 +76,7 @@ public class LeaveService {
         long total = mongoTemplate.count(query, LeaveRequest.class);
         query.with(pageable);
 
-        List<LeaveRequest> leaveRequests= mongoTemplate.find(query, LeaveRequest.class);
+        List<LeaveRequest> leaveRequests = mongoTemplate.find(query, LeaveRequest.class);
 
         return new PageImpl<>(leaveRequests, pageable, total);
     }
@@ -168,14 +168,14 @@ public class LeaveService {
         return leaveDays <= leaveBalance.getAvailableBalance();
     }
 
-        public void assignManager (LeaveRequest request){
-            Employee employee = employeeService.getById(request.getEmployeeId());
-            Employee manager = employeeService.getById(employee.getManagerId());
-            request.setManagerId(manager.getId());
-            request.setManagerName(manager.getUsername());
-        }
+    public void assignManager(LeaveRequest request) {
+        Employee employee = employeeService.getById(request.getEmployeeId());
+        Employee manager = employeeService.getById(employee.getManagerId());
+        request.setManagerId(manager.getId());
+        request.setManagerName(manager.getUsername());
+    }
 
-
+}
 
 
 
@@ -189,5 +189,5 @@ public class LeaveService {
         // TODO:
         // Notify the employee about any status change
         // or action taken on the request.
-    }
+   // }
 

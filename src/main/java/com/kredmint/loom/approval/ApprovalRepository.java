@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface ApprovalRepository extends MongoRepository<ApprovalRequest, String> {
 
     Optional<ApprovalRequest> findByEntityIdAndEntityType(String id, ApprovalRequest.ApprovalEntityType entityType);

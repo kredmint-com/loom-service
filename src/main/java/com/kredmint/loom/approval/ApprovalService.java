@@ -40,13 +40,11 @@ public class ApprovalService {
     public ApprovalRequest forward(String approvalRequestId,
                                    String approverId,
                                    String remarks) {
-
      ApprovalRequest approvalRequest = getById(approvalRequestId);
 
      if(!approvalRequest.getApproverId().equals(approverId)){
          throw new RuntimeException("You aren't authorized to approve this approval.");
      }
-
      if(approvalRequest.getStatus() != ApprovalStatus.PENDING){
          throw new RuntimeException("Only pending approval requests can be forwarded.");
      }
@@ -56,6 +54,7 @@ public class ApprovalService {
      if(currentApprover.getManagerId() == null){
          throw new RuntimeException("No manager found for this approval.");
      }
+
      Employee nextApprover = employeeService.getById(currentApprover.getManagerId());
 
      approvalRequest.setStatus(ApprovalStatus.FORWARDED);
@@ -69,7 +68,6 @@ public class ApprovalService {
         newRequest.setEntityId(approvalRequest.getEntityId());
         newRequest.setEntityType(approvalRequest.getEntityType());
         newRequest.setEmpId(approvalRequest.getEmpId());
-
         newRequest.setApproverId(nextApprover.getId());
         newRequest.setApproverName(nextApprover.getUsername());
 
@@ -103,10 +101,21 @@ public class ApprovalService {
 
     public Page<ApprovalRequest> getPendingApprovals(String approverId,
                                                      Pageable pageable) {
-       return approvalRepository.findByApproverIdAndStatus(approverId, ApprovalStatus.PENDING, pageable);
+
+        Page<ApprovalRequest> pendingApprovals = approvalRepository.findByApproverIdAndStatus(approverId, ApprovalStatus.PENDING, pageable);
+        if(pendingApprovals == null){
+            throw new RuntimeException("No pending requests found");
+        }
+       return pendingApprovals;
     }
 
     public List<ApprovalRequest> getApprovalHistory(String approverId) {
+
+        List<ApprovalRequest> approvalHistory = approvalRepository.findByApproverIdAndStatus(approverId, ApprovalStatus.APPROVED);
+        if(approvalHistory == null){
+            throw new RuntimeException("No approval requests found");
+        }
+
        return approvalRepository.findByApproverIdAndStatus(approverId, ApprovalStatus.APPROVED);
     }
 
@@ -115,7 +124,6 @@ public class ApprovalService {
                                         ApprovalStatus status) {
 
         ApprovalRequest approvalRequest = getById(approvalRequestId);
-
 
         if (approvalRequest.getStatus() != ApprovalStatus.PENDING) {
             throw new RuntimeException("Approval request is not pending.");
@@ -153,8 +161,8 @@ public class ApprovalService {
 
             default:
                 throw new RuntimeException("Invalid action");
-
         }
+
         approvalRequest.setRemarks(request.getRemarks());
         approvalRequest.setActionAt(LocalDateTime.now());
         approvalRequest.setCompletedAt(LocalDateTime.now());
