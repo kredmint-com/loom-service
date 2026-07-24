@@ -1,5 +1,7 @@
 package com.kredmint.loom.leave.service;
 
+import com.kredmint.loom.approval.ApprovalRequest;
+import com.kredmint.loom.approval.ApprovalService;
 import com.kredmint.loom.employee.entity.Employee;
 import com.kredmint.loom.employee.service.EmployeeService;
 import com.kredmint.loom.leave.entity.LeaveBalance;
@@ -30,8 +32,12 @@ public class LeaveService {
 
     @Autowired
     private LeaveRepository leaveRepository;
+
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private ApprovalService approvalService;
 
     public LeaveRequest raiseRequest(LeaveRequest request) {
         if (!validateLeaveRequest(request)) {
@@ -41,7 +47,21 @@ public class LeaveService {
         assignManager(request);
         request.setStatus(LeaveRequest.LeaveStatus.PENDING);
         request.setRequestedOn(LocalDateTime.now());
-        return leaveRepository.save(request);
+
+        LeaveRequest savedRequest = leaveRepository.save(request);
+
+        //creatingApproval
+        ApprovalRequest approvalRequest = new ApprovalRequest();
+
+        approvalRequest.setEntityId(savedRequest.getId());
+        approvalRequest.setEntityType(ApprovalRequest.ApprovalEntityType.LEAVE);
+        approvalRequest.setEmpId(savedRequest.getEmployeeId());
+        approvalRequest.setApproverId(savedRequest.getManagerId());
+        approvalRequest.setApproverName(savedRequest.getManagerName());
+
+        approvalService.create(approvalRequest);
+        return savedRequest;
+
     }
 
     public LeaveRequest getRequestById(String requestId) {
@@ -56,7 +76,7 @@ public class LeaveService {
         long total = mongoTemplate.count(query, LeaveRequest.class);
         query.with(pageable);
 
-        List<LeaveRequest> leaveRequests= mongoTemplate.find(query, LeaveRequest.class);
+        List<LeaveRequest> leaveRequests = mongoTemplate.find(query, LeaveRequest.class);
 
         return new PageImpl<>(leaveRequests, pageable, total);
     }
@@ -148,14 +168,14 @@ public class LeaveService {
         return leaveDays <= leaveBalance.getAvailableBalance();
     }
 
-        public void assignManager (LeaveRequest request){
-            Employee employee = employeeService.getById(request.getEmployeeId());
-            Employee manager = employeeService.getById(employee.getManagerId());
-            request.setManagerId(manager.getId());
-            request.setManagerName(manager.getUsername());
-        }
+    public void assignManager(LeaveRequest request) {
+        Employee employee = employeeService.getById(request.getEmployeeId());
+        Employee manager = employeeService.getById(employee.getManagerId());
+        request.setManagerId(manager.getId());
+        request.setManagerName(manager.getUsername());
+    }
 
-
+}
 
 
 
@@ -169,5 +189,5 @@ public class LeaveService {
         // TODO:
         // Notify the employee about any status change
         // or action taken on the request.
-    }
+   // }
 

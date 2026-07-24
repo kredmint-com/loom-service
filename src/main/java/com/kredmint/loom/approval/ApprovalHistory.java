@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ApprovalHistory {
-    private Long id;
+    private String id;
     private ApprovalRequest approvalRequest;
     private Employee approver;
     private ApprovalStatus action;
